@@ -23,7 +23,7 @@ const destroy = (id) => {
             <p>{{ post.body }}</p>
             <small>by {{ post.user.name }}</small>
 
-            <div v-if="post.can.update" class="mt-2">
+            <div class="mt-2">
                 <Link
                     :href="`/posts/${post.id}/edit`"
                     class="mr-2 text-green-600"
@@ -31,7 +31,10 @@ const destroy = (id) => {
                     Edit
                 </Link>
 
-                <button @click="destroy(post.id)" class="text-red-600">
+                <button
+                    @click="router.delete(`/posts/${post.id}`)"
+                    class="text-red-600"
+                >
                     Delete
                 </button>
             </div>
