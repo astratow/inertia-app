@@ -8,12 +8,24 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Posts/Index', [
-            'posts' => Post::with('user')->latest()->get(),
-        ]);
-    }
+   public function index()
+{
+    return Inertia::render('Posts/Index', [
+        'posts' => Post::with('user')
+            ->latest()
+            ->get()
+            ->map(fn ($post) => [
+                'id' => $post->id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'user' => $post->user,
+                'can' => [
+                    'update' => auth()->user()->can('update', $post),
+                    'delete' => auth()->user()->can('delete', $post),
+                ],
+            ]),
+    ]);
+}
 
     public function create()
     {
