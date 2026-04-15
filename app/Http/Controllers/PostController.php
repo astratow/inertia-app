@@ -5,27 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
+
    public function index()
-{
-    return Inertia::render('Posts/Index', [
-        'posts' => Post::with('user')
-            ->latest()
-            ->get()
-            ->map(fn ($post) => [
-                'id' => $post->id,
-                'title' => $post->title,
-                'body' => $post->body,
-                'user' => $post->user,
-                'can' => [
-                    'update' => auth()->user()->can('update', $post),
-                    'delete' => auth()->user()->can('delete', $post),
-                ],
-            ]),
-    ]);
-}
+    {
+        return Inertia::render('Posts/Index', [
+            'posts' => Post::with('user')
+                ->latest()
+                ->get()
+                ->map(fn ($post) => [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'body' => $post->body,
+                    'created_at' => $post->created_at,
+                    'user' => [
+                        'name' => $post->user->name,
+                    ],
+                    'can' => [
+                        'update' => auth()->user()->can('update', $post),
+                        'delete' => auth()->user()->can('delete', $post),
+                    ],
+                ]),
+        ]);
+    }
+
+    public function show(Post $post)
+    {
+        return Inertia::render('Posts/Show', [
+            'post' => $post->load('user'),
+        ]);
+    }
 
     public function create()
     {
