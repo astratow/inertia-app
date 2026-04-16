@@ -23,7 +23,7 @@ class PostStoreRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
+            'body' => ['required', 'string', 'min:10'],
         ];
     }
 }
