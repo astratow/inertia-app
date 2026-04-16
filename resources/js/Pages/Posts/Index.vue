@@ -7,9 +7,9 @@ defineProps({
     posts: Array,
 });
 
-const destroy = (id) => {
+const destroy = (post) => {
     if (confirm(`Delete post?`)) {
-        router.delete(`/posts/${id}`);
+        router.delete(`/posts/${post.id}`);
     }
 };
 </script>
