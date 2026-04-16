@@ -6,6 +6,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\PostStoreRequest;
 
 class PostController extends Controller
 {
@@ -45,16 +46,24 @@ class PostController extends Controller
         return Inertia::render('Posts/Create');
     }
 
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'body' => 'required',
-        ]);
+        try {
+            Post::create([
+                'title' => $request->validated('title'),
+                'body' => $request->validated('body'),
+                'user_id' => $request->user()->id,
+            ]);
 
-        $request->user()->posts()->create($validated);
+            return redirect()
+                ->route('posts.index')
+                ->with('success', 'Post created successfully.');
 
-        return redirect()->route('posts.index');
+        } catch (\Throwable $e) {
+            return back()
+                ->withErrors('Something went wrong while creating the post.')
+                ->withInput();
+        }
     }
 
     public function edit(Post $post)
